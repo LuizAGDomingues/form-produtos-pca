@@ -1,103 +1,270 @@
-import Image from "next/image";
+"use client";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { createClient } from "@supabase/supabase-js";
+import { useState } from "react";
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+const schema = z.object({
+  // Seção 1: FICHA GERAL (Obrigatória)
+  codigo_produto: z.string().min(1, "Obrigatório"),
+  descricao_produto: z.string().min(1, "Obrigatório"),
+  ncm: z.string().min(1, "Obrigatório"),
+  ean: z.string().min(1, "Obrigatório"),
+  cest: z.string().min(1, "Obrigatório"),
+  unidade: z.string().min(1, "Obrigatório"),
+  quantidade_estoque: z.coerce.number().min(0, "Obrigatório"),
+  preco_unitario: z.coerce.number().min(0, "Obrigatório"),
+  peso: z.coerce.number().min(0, "Obrigatório"),
+  altura: z.coerce.number().min(0, "Obrigatório"),
+  largura: z.coerce.number().min(0, "Obrigatório"),
+  profundidade: z.coerce.number().min(0, "Obrigatório"),
+  categoria_peca: z.string().min(1, "Obrigatório"),
+  sub_peca: z.string().min(1, "Obrigatório"),
+  unidade_texto: z.string().min(1, "Obrigatório"),
+  aparelho: z.string().min(1, "Obrigatório"),
+  marca: z.enum(["FUJITSU", "DAIKIN", "ELGIN", "LG", "SAMSUNG", "MIDEA"]),
+  range_btus: z.string().min(1, "Obrigatório"),
+  modelos_compativeis: z.string().min(1, "Obrigatório"),
+  // Seção 2: FICHA ELÉTRICA (Opcional)
+  tensao: z.string().optional().or(z.literal("")),
+  potencia: z.string().optional().or(z.literal("")),
+  corrente: z.string().optional().or(z.literal("")),
+  resistencia: z.string().optional().or(z.literal("")),
+  frequencia: z.string().optional().or(z.literal("")),
+  capacitancia: z.string().optional().or(z.literal("")),
+  // Seção 3: FICHA DE INFORMAÇÕES EXTRAS (Opcional)
+  funcoes: z.string().optional().or(z.literal("")),
+  tipo_pilha: z.string().optional().or(z.literal("")),
+  pontas_cobre: z.string().optional().or(z.literal("")),
+  protecao_placas: z.string().optional().or(z.literal("")),
+  gas_compressores: z.string().optional().or(z.literal("")),
+  capacidade_compressor: z.string().optional().or(z.literal("")),
+});
+
+type FormData = z.infer<typeof schema>;
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  });
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+  const onSubmit = async (data: FormData) => {
+    setError("");
+    setSuccess(false);
+    const { error } = await supabase.from("produtos").insert([data]);
+    if (error) {
+      setError(error.message);
+    } else {
+      setSuccess(true);
+      reset();
+    }
+  };
+
+  return (
+    <div className="max-w-2xl mx-auto p-4">
+      <h1 className="text-2xl font-bold mb-4">PCA PEÇAS - CADASTRO DE PRODUTOS</h1>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Seção 1: FICHA GERAL */}
+        <section>
+          <h2 className="text-xl font-semibold mb-2">Ficha Geral</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label>Código do Produto*</label>
+              <input {...register("codigo_produto")}
+                className="input" />
+              {errors.codigo_produto && <span className="text-red-500">{errors.codigo_produto.message}</span>}
+            </div>
+            <div>
+              <label>Descrição do Produto no Fabricante*</label>
+              <input {...register("descricao_produto")} className="input" />
+              {errors.descricao_produto && <span className="text-red-500">{errors.descricao_produto.message}</span>}
+            </div>
+            <div>
+              <label>NCM*</label>
+              <input {...register("ncm")} className="input" />
+              {errors.ncm && <span className="text-red-500">{errors.ncm.message}</span>}
+            </div>
+            <div>
+              <label>EAN*</label>
+              <input {...register("ean")} className="input" />
+              {errors.ean && <span className="text-red-500">{errors.ean.message}</span>}
+            </div>
+            <div>
+              <label>CEST*</label>
+              <input {...register("cest")} className="input" />
+              {errors.cest && <span className="text-red-500">{errors.cest.message}</span>}
+            </div>
+            <div>
+              <label>UNIDADE*</label>
+              <input {...register("unidade")} className="input" />
+              {errors.unidade && <span className="text-red-500">{errors.unidade.message}</span>}
+            </div>
+            <div>
+              <label>QUANTIDADE EM ESTOQUE*</label>
+              <input type="number" {...register("quantidade_estoque")} className="input" />
+              {errors.quantidade_estoque && <span className="text-red-500">{errors.quantidade_estoque.message}</span>}
+            </div>
+            <div>
+              <label>Preço Unitário*</label>
+              <input type="number" step="0.01" {...register("preco_unitario")} className="input" />
+              {errors.preco_unitario && <span className="text-red-500">{errors.preco_unitario.message}</span>}
+            </div>
+            <div>
+              <label>Peso (Kg)*</label>
+              <input type="number" step="0.01" {...register("peso")} className="input" />
+              {errors.peso && <span className="text-red-500">{errors.peso.message}</span>}
+            </div>
+            <div>
+              <label>Altura (cm)*</label>
+              <input type="number" step="0.01" {...register("altura")} className="input" />
+              {errors.altura && <span className="text-red-500">{errors.altura.message}</span>}
+            </div>
+            <div>
+              <label>Largura (cm)*</label>
+              <input type="number" step="0.01" {...register("largura")} className="input" />
+              {errors.largura && <span className="text-red-500">{errors.largura.message}</span>}
+            </div>
+            <div>
+              <label>Profundidade (cm)*</label>
+              <input type="number" step="0.01" {...register("profundidade")} className="input" />
+              {errors.profundidade && <span className="text-red-500">{errors.profundidade.message}</span>}
+            </div>
+            <div>
+              <label>Categoria da Peça*</label>
+              <input {...register("categoria_peca")} className="input" />
+              {errors.categoria_peca && <span className="text-red-500">{errors.categoria_peca.message}</span>}
+            </div>
+            <div>
+              <label>Sub Peça*</label>
+              <input {...register("sub_peca")} className="input" />
+              {errors.sub_peca && <span className="text-red-500">{errors.sub_peca.message}</span>}
+            </div>
+            <div>
+              <label>Unidade*</label>
+              <input {...register("unidade_texto")} className="input" />
+              {errors.unidade_texto && <span className="text-red-500">{errors.unidade_texto.message}</span>}
+            </div>
+            <div>
+              <label>Aparelho*</label>
+              <input {...register("aparelho")} className="input" />
+              {errors.aparelho && <span className="text-red-500">{errors.aparelho.message}</span>}
+            </div>
+            <div>
+              <label>Marca*</label>
+              <select {...register("marca")} className="input">
+                <option value="">Selecione</option>
+                <option value="FUJITSU">FUJITSU</option>
+                <option value="DAIKIN">DAIKIN</option>
+                <option value="ELGIN">ELGIN</option>
+                <option value="LG">LG</option>
+                <option value="SAMSUNG">SAMSUNG</option>
+                <option value="MIDEA">MIDEA</option>
+              </select>
+              {errors.marca && <span className="text-red-500">{errors.marca.message}</span>}
+            </div>
+            <div>
+              <label>Range de BTUs*</label>
+              <input {...register("range_btus")} className="input" />
+              {errors.range_btus && <span className="text-red-500">{errors.range_btus.message}</span>}
+            </div>
+            <div className="sm:col-span-2">
+              <label>Modelos Compatíveis*</label>
+              <input {...register("modelos_compativeis")} className="input" />
+              {errors.modelos_compativeis && <span className="text-red-500">{errors.modelos_compativeis.message}</span>}
+            </div>
+          </div>
+        </section>
+
+        {/* Seção 2: FICHA ELÉTRICA (Opcional) */}
+        <section>
+          <h2 className="text-xl font-semibold mb-2">Ficha Elétrica (Opcional)</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label>Tensão</label>
+              <input {...register("tensao")} className="input" />
+            </div>
+            <div>
+              <label>Potência</label>
+              <input {...register("potencia")} className="input" />
+            </div>
+            <div>
+              <label>Corrente</label>
+              <input {...register("corrente")} className="input" />
+            </div>
+            <div>
+              <label>Resistência</label>
+              <input {...register("resistencia")} className="input" />
+            </div>
+            <div>
+              <label>Frequência</label>
+              <input {...register("frequencia")} className="input" />
+            </div>
+            <div>
+              <label>Capacitância</label>
+              <input {...register("capacitancia")} className="input" />
+            </div>
+          </div>
+        </section>
+
+        {/* Seção 3: FICHA DE INFORMAÇÕES EXTRAS (Opcional) */}
+        <section>
+          <h2 className="text-xl font-semibold mb-2">Informações Extras (Opcional)</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label>Funções</label>
+              <input {...register("funcoes")} className="input" />
+            </div>
+            <div>
+              <label>Tipo de Pilha</label>
+              <input {...register("tipo_pilha")} className="input" />
+            </div>
+            <div>
+              <label>Pontas de Cobre</label>
+              <input {...register("pontas_cobre")} className="input" />
+            </div>
+            <div>
+              <label>Proteção (Placas)</label>
+              <input {...register("protecao_placas")} className="input" />
+            </div>
+            <div>
+              <label>Gás (Compressores)</label>
+              <input {...register("gas_compressores")} className="input" />
+            </div>
+            <div>
+              <label>Capacidade do Compressor</label>
+              <input {...register("capacidade_compressor")} className="input" />
+            </div>
+          </div>
+        </section>
+
+        <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded disabled:opacity-50" disabled={isSubmitting}>
+          {isSubmitting ? "Enviando..." : "Cadastrar Produto"}
+        </button>
+        {success && <div className="text-green-600 font-bold">Cadastro realizado com sucesso!</div>}
+        {error && <div className="text-red-600 font-bold">Erro: {error}</div>}
+      </form>
+      <style jsx>{`
+        .input {
+          width: 100%;
+          padding: 0.5rem;
+          border: 1px solid #ccc;
+          border-radius: 0.375rem;
+          margin-top: 0.25rem;
+        }
+      `}</style>
     </div>
   );
 }

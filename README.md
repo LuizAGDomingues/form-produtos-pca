@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PCA PEÇAS - Cadastro de Produtos
 
-## Getting Started
+Este projeto é um formulário online para cadastro de produtos de peças, inspirado em um Google Forms, desenvolvido com Next.js, React Hook Form, Zod e integrado ao banco de dados Supabase.
 
-First, run the development server:
+## Funcionalidades
+- Cadastro de produtos com validação de campos obrigatórios e opcionais
+- Armazenamento das respostas diretamente no Supabase
+- Interface responsiva e fácil de usar
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Tecnologias Utilizadas
+- [Next.js](https://nextjs.org/)
+- [React Hook Form](https://react-hook-form.com/)
+- [Zod](https://zod.dev/)
+- [Supabase](https://supabase.com/)
+- [TypeScript](https://www.typescriptlang.org/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Instalação
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone o repositório:**
+   ```bash
+   git clone <url-do-repositorio>
+   cd form-produtos-pca
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Instale as dependências:**
+   ```bash
+   npm install
+   ```
 
-## Learn More
+3. **Configure as variáveis de ambiente:**
+   Crie um arquivo `.env.local` na raiz do projeto com o seguinte conteúdo:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=COLOQUE_AQUI_SUA_URL_DO_SUPABASE
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=COLOQUE_AQUI_SUA_ANON_KEY_DO_SUPABASE
+   ```
+   Obtenha esses valores no painel do seu projeto Supabase.
 
-To learn more about Next.js, take a look at the following resources:
+4. **Configure o banco de dados Supabase:**
+   No painel do Supabase, crie uma tabela chamada `produtos` com as seguintes colunas (todas tipo `text`, exceto onde indicado):
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+   | Nome                  | Tipo    |
+   |-----------------------|---------|
+   | codigo_produto        | text    |
+   | descricao_produto     | text    |
+   | ncm                   | text    |
+   | ean                   | text    |
+   | cest                  | text    |
+   | unidade               | text    |
+   | quantidade_estoque    | numeric |
+   | preco_unitario        | numeric |
+   | peso                  | numeric |
+   | altura                | numeric |
+   | largura               | numeric |
+   | profundidade          | numeric |
+   | categoria_peca        | text    |
+   | sub_peca              | text    |
+   | unidade_texto         | text    |
+   | aparelho              | text    |
+   | marca                 | text    |
+   | range_btus            | text    |
+   | modelos_compativeis   | text    |
+   | tensao                | text    |
+   | potencia              | text    |
+   | corrente              | text    |
+   | resistencia           | text    |
+   | frequencia            | text    |
+   | capacitancia          | text    |
+   | funcoes               | text    |
+   | tipo_pilha            | text    |
+   | pontas_cobre          | text    |
+   | protecao_placas       | text    |
+   | gas_compressores      | text    |
+   | capacidade_compressor | text    |
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   > **Dica:** Você pode ajustar os tipos conforme sua necessidade.
 
-## Deploy on Vercel
+5. **Execute o projeto:**
+   ```bash
+   npm run dev
+   ```
+   Acesse [http://localhost:3000](http://localhost:3000) para utilizar o formulário.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Estrutura do Formulário
+O formulário é dividido em três seções:
+- **Ficha Geral:** campos obrigatórios sobre o produto
+- **Ficha Elétrica:** campos opcionais sobre características elétricas
+- **Informações Extras:** campos opcionais para informações adicionais
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Personalização
+Você pode adaptar os campos do formulário e a tabela do Supabase conforme a necessidade do seu negócio.
+
+## Licença
+Este projeto é open source e está sob a licença MIT.
