@@ -25,8 +25,56 @@ const schema = z.object({
   altura: z.coerce.number().min(0, "Obrigatório"),
   largura: z.coerce.number().min(0, "Obrigatório"),
   profundidade: z.coerce.number().min(0, "Obrigatório"),
-  categoria_peca: z.string().min(1, "Obrigatório"),
-  sub_peca: z.string().min(1, "Obrigatório"),
+  categoria_peca: z.enum([
+    "Aleta",
+    "Amortecedor",
+    "Bandeja",
+    "Bandeja de Dreno",
+    "Base da Condensadora",
+    "Borracha",
+    "Bomba",
+    "Caracol",
+    "Chave Contatora",
+    "Compressor",
+    "Conector",
+    "Conector Chicote",
+    "Controle Remoto",
+    "Coxim",
+    "Dispositivo Piston",
+    "Duto",
+    "Engrenagem Swing",
+    "Filtro",
+    "Gabinete",
+    "Gaveta",
+    "Grade",
+    "Hélice",
+    "Kit Barras de Led",
+    "Magnetron",
+    "Mangueira",
+    "Motor",
+    "Painel",
+    "Placa",
+    "Placa Display",
+    "Rele",
+    "Resistor",
+    "Sensor",
+    "Sensor de Nível",
+    "Serpentina",
+    "Suporte",
+    "Suporte do Tambor",
+    "Tampa",
+    "Tampa do Dreno",
+    "Termistor",
+    "Terminal",
+    "Transformador",
+    "Trava",
+    "Tubo",
+    "Turbina",
+    "Válvula",
+    "Válvula de Serviço",
+    "Válvula Reversora"
+  ], { required_error: "Obrigatório" }),
+  sub_peca: z.string().optional(),
   unidade_texto: z
     .array(
       z.enum([
@@ -76,6 +124,7 @@ export default function Home() {
     formState: { errors, isSubmitting },
     reset,
     control,
+    watch,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -96,9 +145,48 @@ export default function Home() {
     { value: "Recuperador de Calor", label: "Recuperador de Calor" },
   ];
 
+  // Mapeamento de subpeças por categoria
+  const subPecaOptions: Record<string, string[]> = {
+    "Aleta": ["da WindFree", "Horizontal", "Superior", "Vertical"],
+    "Bandeja": ["do Dreno"],
+    "Bomba": ["do Dreno"],
+    "Borracha": ["de Vedação"],
+    "Compressor": ["GMCC", "Rechi", "Scroll"],
+    "Conector": ["Bluetooth"],
+    "Conector Chicote": ["UL94V-BL 2MM"],
+    "Controle Remoto": ["AR-JE5", "AR-JW1", "AR-JW22", "AR-RAE7E", "AR-RAH5E/EN", "AR-RY21", "Magic", "R51ME"],
+    "Dispositivo Piston": [",11 mm", ",13 mm", ",57 mm", ",61 mm", ",81 mm", ",82 mm"],
+    "Filtro": ["da Evaporadora", "de Ar", "de Ar 519x2145mm", "Desodorizante"],
+    "Gabinete": ["Frontal"],
+    "Gaveta": ["da Prateleira"],
+    "Grade": ["da Condensadora", "do Filtro", "Frontal"],
+    "Hélice": ["da Condensadora"],
+    "Mangueira": ["de Dreno", "do Dispenser"],
+    "Motor": ["ADASV2M", "com Kit Turbinas", "da Aleta Horizontal", "da Aletas Verticais", "da Condensadora", "da Evaporadora", "de Passo (Swing)", "RPG15C-8", "SIC-41CVJ-F123-2"],
+    "Painel": ["Frontal", "Inferior", "Lateral"],
+    "Placa": ["Botão Ligar", "Capacitoria", "Controladora", "de circuito impresso", "de Força", "Display", "Eeprom", "Filtro", "Filtro de Linha", "Fonte", "Inverter", "Principal", "Principal KZJ7-13BH5E-C1", "Principal K7CJ-911W1UE-C1", "Secundária", "Transistor", "Transistora"],
+    "Sensor": ["de Velocidade", "de Vibração"],
+    "Serpentina": ["da Evaporadora"],
+    "Suporte": ["Antiderrapante", "da Evaporadora", "da Serpentina", "da Válvula", "do Motor"],
+    "Tampa": ["Controladora", "da Evaporadora", "Lateral"],
+    "Terminal": ["da Evaporadora"],
+    "Termistor": ["Degelo", "DTN-WS13H6P-FTZ136", "DTN-WS13H6P-FTZ391", "EPH53AR", "PTM-41", "Terminal Azul", "Terminal Branco", "Terminal Vermelho"],
+    "Tubo": ["da Serpentina"],
+    "Turbina": ["da Evaporadora"],
+    "Válvula": ["com Tubulação", "de Expansão", "de Retenção", "Reversora"],
+    "Válvula de Serviço": ["3 Vias"],
+  };
+
   const onSubmit = async (data: FormData) => {
     setError("");
     setSuccess(false);
+    // Verificar se sub_peca é obrigatória para a categoria selecionada
+    const categoria = data.categoria_peca;
+    const subpecas = subPecaOptions[categoria] || [];
+    if (subpecas.length > 0 && !data.sub_peca) {
+      setError("Selecione uma sub peça para a categoria escolhida.");
+      return;
+    }
     // Forçar unidade como 'UN'
     const dataToSend = {
       ...data,
@@ -183,12 +271,75 @@ export default function Home() {
             </div>
             <div>
               <label>Categoria da Peça<span className="text-red-500">*</span></label>
-              <input {...register("categoria_peca")} className="input" />
+              <select {...register("categoria_peca")} className="input">
+                <option value="">Selecione</option>
+                <option value="Aleta">Aleta</option>
+                <option value="Amortecedor">Amortecedor</option>
+                <option value="Bandeja">Bandeja</option>
+                <option value="Bandeja de Dreno">Bandeja de Dreno</option>
+                <option value="Base da Condensadora">Base da Condensadora</option>
+                <option value="Borracha">Borracha</option>
+                <option value="Bomba">Bomba</option>
+                <option value="Caracol">Caracol</option>
+                <option value="Chave Contatora">Chave Contatora</option>
+                <option value="Compressor">Compressor</option>
+                <option value="Conector">Conector</option>
+                <option value="Conector Chicote">Conector Chicote</option>
+                <option value="Controle Remoto">Controle Remoto</option>
+                <option value="Coxim">Coxim</option>
+                <option value="Dispositivo Piston">Dispositivo Piston</option>
+                <option value="Duto">Duto</option>
+                <option value="Engrenagem Swing">Engrenagem Swing</option>
+                <option value="Filtro">Filtro</option>
+                <option value="Gabinete">Gabinete</option>
+                <option value="Gaveta">Gaveta</option>
+                <option value="Grade">Grade</option>
+                <option value="Hélice">Hélice</option>
+                <option value="Kit Barras de Led">Kit Barras de Led</option>
+                <option value="Magnetron">Magnetron</option>
+                <option value="Mangueira">Mangueira</option>
+                <option value="Motor">Motor</option>
+                <option value="Painel">Painel</option>
+                <option value="Placa">Placa</option>
+                <option value="Placa Display">Placa Display</option>
+                <option value="Rele">Rele</option>
+                <option value="Resistor">Resistor</option>
+                <option value="Sensor">Sensor</option>
+                <option value="Sensor de Nível">Sensor de Nível</option>
+                <option value="Serpentina">Serpentina</option>
+                <option value="Suporte">Suporte</option>
+                <option value="Suporte do Tambor">Suporte do Tambor</option>
+                <option value="Tampa">Tampa</option>
+                <option value="Tampa do Dreno">Tampa do Dreno</option>
+                <option value="Termistor">Termistor</option>
+                <option value="Terminal">Terminal</option>
+                <option value="Transformador">Transformador</option>
+                <option value="Trava">Trava</option>
+                <option value="Tubo">Tubo</option>
+                <option value="Turbina">Turbina</option>
+                <option value="Válvula">Válvula</option>
+                <option value="Válvula de Serviço">Válvula de Serviço</option>
+                <option value="Válvula Reversora">Válvula Reversora</option>
+              </select>
               {errors.categoria_peca && <span className="text-red-500">{errors.categoria_peca.message}</span>}
             </div>
             <div>
-              <label>Sub Peça<span className="text-red-500">*</span></label>
-              <input {...register("sub_peca")} className="input" />
+              <label>
+                Sub Peça
+                {watch("categoria_peca") && subPecaOptions[watch("categoria_peca")] && subPecaOptions[watch("categoria_peca")].length > 0 && (
+                  <span className="text-red-500">*</span>
+                )}
+              </label>
+              <select
+                {...register("sub_peca")}
+                className={`input ${(!watch("categoria_peca") || !subPecaOptions[watch("categoria_peca")]) ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
+                disabled={!watch("categoria_peca") || !subPecaOptions[watch("categoria_peca")]}
+              >
+                <option value="">Selecione</option>
+                {watch("categoria_peca") && subPecaOptions[watch("categoria_peca")]?.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
+              </select>
               {errors.sub_peca && <span className="text-red-500">{errors.sub_peca.message}</span>}
             </div>
             <div className="mt-1">
@@ -208,7 +359,7 @@ export default function Home() {
                     styles={{
                       control: (base, state) => ({
                         ...base,
-                        minHeight: '41px',
+                        minHeight: '37px',
                         borderColor: state.isFocused ? '#2563eb' : '#ccc',
                         boxShadow: state.isFocused ? '0 0 0 1px #2563eb' : base.boxShadow,
                         '&:hover': { borderColor: '#2563eb' },
@@ -365,6 +516,11 @@ export default function Home() {
           border: 1px solid #ccc;
           border-radius: 0.375rem;
           margin-top: 0.25rem;
+        }
+        .input:disabled {
+          background-color: #f3f4f6;
+          color: #9ca3af;
+          cursor: not-allowed;
         }
       `}</style>
     </div>
