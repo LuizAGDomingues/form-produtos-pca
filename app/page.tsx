@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 
 const supabase = createClient(
@@ -18,7 +18,6 @@ const schema = z.object({
   ncm: z.string().min(1, "Obrigatório"),
   ean: z.string().min(1, "Obrigatório"),
   cest: z.string().min(1, "Obrigatório"),
-  unidade: z.string().min(1, "Obrigatório"),
   quantidade_estoque: z.coerce.number().min(0, "Obrigatório"),
   preco_unitario: z.coerce.number().min(0, "Obrigatório"),
   peso: z.coerce.number().min(0, "Obrigatório"),
@@ -129,6 +128,10 @@ export default function Home() {
     resolver: zodResolver(schema),
   });
 
+  useEffect(() => {
+    console.log("isSubmitting:", isSubmitting);
+  }, [isSubmitting]);
+
   // Opções para o campo unidade_texto
   const unidadeOptions = [
     { value: "Ar Janela", label: "Ar Janela" },
@@ -180,11 +183,13 @@ export default function Home() {
   const onSubmit = async (data: FormData) => {
     setError("");
     setSuccess(false);
+    let erroManual = false;
     // Verificar se sub_peca é obrigatória para a categoria selecionada
     const categoria = data.categoria_peca;
     const subpecas = subPecaOptions[categoria] || [];
     if (subpecas.length > 0 && !data.sub_peca) {
       setError("Selecione uma sub peça para a categoria escolhida.");
+      erroManual = true;
       return;
     }
     // Forçar unidade como 'UN'
@@ -193,17 +198,63 @@ export default function Home() {
       unidade: "UN",
       unidade_texto: Array.isArray(data.unidade_texto) ? data.unidade_texto.join(", ") : data.unidade_texto
     };
-    const { error } = await supabase.from("produtos").insert([dataToSend]);
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess(true);
-      reset({
-        ...data,
-        unidade_texto: []
-      });
+    console.log("Enviando para Supabase:", dataToSend);
+    try {
+      const { error } = await supabase.from("produtos").insert([dataToSend]);
+      if (error) {
+        setError("Erro Supabase: " + error.message);
+        console.error("Erro Supabase:", error);
+      } else {
+        setSuccess(true);
+        reset({
+          codigo_produto: "",
+          descricao_produto: "",
+          ncm: "",
+          ean: "",
+          cest: "",
+          quantidade_estoque: undefined,
+          preco_unitario: undefined,
+          peso: undefined,
+          altura: undefined,
+          largura: undefined,
+          profundidade: undefined,
+          categoria_peca: undefined,
+          sub_peca: "",
+          unidade_texto: [],
+          aparelho: undefined,
+          marca: undefined,
+          range_btus: "",
+          modelos_compativeis: "",
+          tensao: "",
+          potencia: "",
+          corrente: "",
+          resistencia: "",
+          frequencia: "",
+          capacitancia: "",
+          funcoes: "",
+          tipo_pilha: "",
+          pontas_cobre: "",
+          protecao_placas: "",
+          gas_compressores: "",
+          capacidade_compressor: ""
+        });
+      }
+    } catch (e) {
+      setError("Erro inesperado: " + (e instanceof Error ? e.message : String(e)));
+      console.error("Erro inesperado:", e);
+    } finally {
+      // Garante que o isSubmitting volte a false
+      if (!erroManual) setTimeout(() => { setSuccess(false); }, 2000);
     }
   };
+
+  // Exibir erros de validação como alert
+  if (Object.keys(errors).length > 0) {
+    const firstError = Object.values(errors)[0];
+    if (firstError && typeof window !== 'undefined') {
+      alert((firstError as any).message || 'Erro de validação no formulário.');
+    }
+  }
 
   return (
     <div className="max-w-2xl mx-auto p-4">
