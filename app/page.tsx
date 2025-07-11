@@ -573,7 +573,7 @@ export default function Home() {
                 <option value="ELGIN">ELGIN</option>
                 <option value="LG">LG</option>
                 <option value="SAMSUNG">SAMSUNG</option>
-                <option value="MIDEA">MIDEA</option>
+                <option value="SPRINGER MIDEA CARRIER">SPRINGER MIDEA CARRIER</option>
               </select>
               {errors.marca && <span className="text-red-500">{errors.marca.message}</span>}
             </div>
