@@ -20,10 +20,14 @@ const schema = z.object({
   cest: z.string().min(1, "Obrigatório"),
   quantidade_estoque: z.coerce.number().min(0, "Obrigatório"),
   preco_unitario: z.coerce.number().min(0, "Obrigatório"),
-  peso: z.coerce.number().min(0, "Obrigatório"),
-  altura: z.coerce.number().min(0, "Obrigatório"),
-  largura: z.coerce.number().min(0, "Obrigatório"),
-  profundidade: z.coerce.number().min(0, "Obrigatório"),
+  peso_peca: z.coerce.number().min(0, "Obrigatório"),
+  altura_peca: z.coerce.number().min(0, "Obrigatório"),
+  largura_peca: z.coerce.number().min(0, "Obrigatório"),
+  profundidade_peca: z.coerce.number().min(0, "Obrigatório"),
+  peso_caixa: z.coerce.number().min(0, "Obrigatório"),
+  altura_caixa: z.coerce.number().min(0, "Obrigatório"),
+  largura_caixa: z.coerce.number().min(0, "Obrigatório"),
+  profundidade_caixa: z.coerce.number().min(0, "Obrigatório"),
   categoria_peca: z.enum([
     "Aleta",
     "Amortecedor",
@@ -293,10 +297,14 @@ export default function Home() {
           cest: "",
           quantidade_estoque: undefined,
           preco_unitario: undefined,
-          peso: undefined,
-          altura: undefined,
-          largura: undefined,
-          profundidade: undefined,
+          peso_peca: undefined,
+          altura_peca: undefined,
+          largura_peca: undefined,
+          profundidade_peca: undefined,
+          peso_caixa: undefined,
+          altura_caixa: undefined,
+          largura_caixa: undefined,
+          profundidade_caixa: undefined,
           categoria_peca: undefined,
           sub_peca: "",
           unidade_texto: [],
@@ -372,24 +380,44 @@ export default function Home() {
               {errors.preco_unitario && <span className="text-red-500">{errors.preco_unitario.message}</span>}
             </div>
             <div>
-              <label>Peso (Kg)<span className="text-red-500">*</span></label>
-              <input type="number" step="0.01" {...register("peso")} className="input" />
-              {errors.peso && <span className="text-red-500">{errors.peso.message}</span>}
+              <label>Peso da Peça (Kg)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("peso_peca")} className="input" />
+              {errors.peso_peca && <span className="text-red-500">{errors.peso_peca.message}</span>}
             </div>
             <div>
-              <label>Altura (cm)<span className="text-red-500">*</span></label>
-              <input type="number" step="0.01" {...register("altura")} className="input" />
-              {errors.altura && <span className="text-red-500">{errors.altura.message}</span>}
+              <label>Altura da Peça (cm)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("altura_peca")} className="input" />
+              {errors.altura_peca && <span className="text-red-500">{errors.altura_peca.message}</span>}
             </div>
             <div>
-              <label>Largura (cm)<span className="text-red-500">*</span></label>
-              <input type="number" step="0.01" {...register("largura")} className="input" />
-              {errors.largura && <span className="text-red-500">{errors.largura.message}</span>}
+              <label>Largura da Peça (cm)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("largura_peca")} className="input" />
+              {errors.largura_peca && <span className="text-red-500">{errors.largura_peca.message}</span>}
             </div>
             <div>
-              <label>Profundidade (cm)<span className="text-red-500">*</span></label>
-              <input type="number" step="0.01" {...register("profundidade")} className="input" />
-              {errors.profundidade && <span className="text-red-500">{errors.profundidade.message}</span>}
+              <label>Profundidade da Peça (cm)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("profundidade_peca")} className="input" />
+              {errors.profundidade_peca && <span className="text-red-500">{errors.profundidade_peca.message}</span>}
+            </div>
+            <div>
+              <label>Peso da Caixa (Kg)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("peso_caixa")} className="input" />
+              {errors.peso_caixa && <span className="text-red-500">{errors.peso_caixa.message}</span>}
+            </div>
+            <div>
+              <label>Altura da Caixa (cm)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("altura_caixa")} className="input" />
+              {errors.altura_caixa && <span className="text-red-500">{errors.altura_caixa.message}</span>}
+            </div>
+            <div>
+              <label>Largura da Caixa (cm)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("largura_caixa")} className="input" />
+              {errors.largura_caixa && <span className="text-red-500">{errors.largura_caixa.message}</span>}
+            </div>
+            <div>
+              <label>Profundidade da Caixa (cm)<span className="text-red-500">*</span></label>
+              <input type="number" step="0.01" {...register("profundidade_caixa")} className="input" />
+              {errors.profundidade_caixa && <span className="text-red-500">{errors.profundidade_caixa.message}</span>}
             </div>
             <div>
               <label>Categoria da Peça<span className="text-red-500">*</span></label>
