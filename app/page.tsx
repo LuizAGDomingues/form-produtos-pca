@@ -568,12 +568,12 @@ export default function Home() {
               <label>Marca<span className="text-red-500">*</span></label>
               <select {...register("marca")} className="input">
                 <option value="">Selecione</option>
-                <option value="FUJITSU">FUJITSU</option>
-                <option value="DAIKIN">DAIKIN</option>
-                <option value="ELGIN">ELGIN</option>
+                <option value="Fujitsu">FUJITSU</option>
+                <option value="Daikin">DAIKIN</option>
+                <option value="Elgin">ELGIN</option>
                 <option value="LG">LG</option>
-                <option value="SAMSUNG">SAMSUNG</option>
-                <option value="SPRINGER MIDEA CARRIER">SPRINGER MIDEA CARRIER</option>
+                <option value="Samsung">SAMSUNG</option>
+                <option value="Springer Midea Carrier">SPRINGER MIDEA CARRIER</option>
               </select>
               {errors.marca && <span className="text-red-500">{errors.marca.message}</span>}
             </div>
