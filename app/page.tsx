@@ -28,7 +28,6 @@ const schema = z.object({
     "Aleta",
     "Amortecedor",
     "Bandeja",
-    "Bandeja de Dreno",
     "Base da Condensadora",
     "Borracha",
     "Bomba",
@@ -60,18 +59,14 @@ const schema = z.object({
     "Sensor de Nível",
     "Serpentina",
     "Suporte",
-    "Suporte do Tambor",
     "Tampa",
-    "Tampa do Dreno",
     "Termistor",
     "Terminal",
     "Transformador",
     "Trava",
     "Tubo",
     "Turbina",
-    "Válvula",
-    "Válvula de Serviço",
-    "Válvula Reversora"
+    "Válvula"
   ], { required_error: "Obrigatório" }),
   sub_peca: z.string().optional(),
   unidade_texto: z
@@ -180,6 +175,71 @@ export default function Home() {
     "Válvula de Serviço": ["3 Vias"],
   };
 
+  // Mapeamento de aparelhos por categoria
+  const aparelhoOptions: Record<string, string[]> = {
+    "Aleta": ["Ar-Condicionado"],
+    "Amortecedor": ["Lava e Seca"],
+    "Bandeja": ["Ar-Condicionado", "Ar-Condicionado Portátil"],
+    "Base da Condensadora": ["Ar-Condicionado"],
+    "Bomba": ["Ar-Condicionado", "Lava e Seca"],
+    "Borracha": ["Ar-Condicionado", "Lava e Seca"],
+    "Bucha": ["Ar-Condicionado"],
+    "Capacitor": ["Ar-Condicionado"],
+    "Capacitor Permanente": ["Ar-Condicionado"],
+    "Caracol": ["Ar-Condicionado"],
+    "Chave Contatora": ["Ar-Condicionado"],
+    "Compressor": ["Ar-Condicionado"],
+    "Condutor": ["Ar-Condicionado"],
+    "Conector": ["Teclados e Mouse"],
+    "Conector Chicote": ["Ar-Condicionado", "Purificador de Ar"],
+    "Controle Remoto": ["Ar-Condicionado", "Smart Tv"],
+    "Coxim": ["Ar-Condicionado"],
+    "Dispositivo Piston": ["Ar-Condicionado"],
+    "Engrenagem Swing": ["Ar-Condicionado"],
+    "Filtro": ["Ar-Condicionado"],
+    "Gabinete": ["Ar-Condicionado"],
+    "Gaveta": ["Refrigerador"],
+    "Grade": ["Ar-Condicionado", "Purificador de Ar"],
+    "Hélice": ["Ar-Condicionado"],
+    "Kit Barras de Led": ["Smart Tv"],
+    "Kit Parafusos": ["Ar-Condicionado"],
+    "Magnetron": ["Microondas"],
+    "Mangueira": ["Ar-Condicionado", "Lava e Seca"],
+    "Motor": ["Ar-Condicionado", "Purificador de Ar"],
+    "Painel": ["Ar-Condicionado"],
+    "Placa": ["Ar-Condicionado", "Purificador de Ar"],
+    "Placa Display": ["Ar-Condicionado"],
+    "Pressostato": ["Ar-Condicionado"],
+    "Puxador da Porta": ["Lava e Seca"],
+    "Rele": ["Ar-Condicionado"],
+    "Resistor": ["Ar-Condicionado"],
+    "Sensor": ["Lava e Seca"],
+    "Sensor de Nível": ["Ar-Condicionado"],
+    "Serpentina": ["Ar-Condicionado"],
+    "Suporte": ["Ar-Condicionado", "Lava e Seca"],
+    "Suporte do Tambor": ["Lava e Seca"],
+    "Tampa": ["Ar-Condicionado", "Lava e Seca", "Purificador de Ar"],
+    "Tampa do Dreno": ["Ar-Condicionado"],
+    "Terminal": ["Ar-Condicionado"],
+    "Termistor": ["Ar-Condicionado"],
+    "Transformador": ["Ar-Condicionado"],
+    "Trava": ["Lava e Seca"],
+    "Trava Magnética": ["Ar-Condicionado"],
+    "Tubo": ["Ar-Condicionado"],
+    "Turbina": ["Ar-Condicionado"],
+    "Válvula": ["Ar-Condicionado", "Lava e Seca"],
+    "Válvula de Serviço": ["Ar-Condicionado", "Lava e Seca"],
+    "Válvula Reversora": ["Ar-Condicionado"]
+  };
+
+  // Mapeamento de categorias elétricas
+  const categoriasEletricas = [
+    "Bomba", "Capacitor", "Capacitor Permanente", "Chave Contatora", "Compressor", "Condutor", "Conector", "Conector Chicote", "Controle Remoto", "Kit Barras de Led", "Magnetron", "Motor", "Painel", "Placa", "Placa Display", "Pressostato", "Rele", "Resistor", "Sensor", "Sensor de Nível", "Terminal", "Termistor", "Transformador", "Trava", "Trava Magnética", "Válvula", "Válvula Reversora"
+  ];
+
+  const categoriaSelecionada = watch("categoria_peca");
+  const isEletrica = categoriasEletricas.includes(categoriaSelecionada || "");
+
   const onSubmit = async (data: FormData) => {
     setError("");
     setSuccess(false);
@@ -191,6 +251,25 @@ export default function Home() {
       setError("Selecione uma sub peça para a categoria escolhida.");
       erroManual = true;
       return;
+    }
+    // Validação manual dos campos elétricos se for categoria elétrica
+    if (categoriasEletricas.includes(categoria)) {
+      const camposEletricos = [
+        { nome: "tensao", label: "Tensão" },
+        { nome: "potencia", label: "Potência" },
+        { nome: "corrente", label: "Corrente" },
+        { nome: "resistencia", label: "Resistência" },
+        { nome: "frequencia", label: "Frequência" },
+        { nome: "capacitancia", label: "Capacitância" },
+      ];
+      const dataObj: Record<string, any> = data;
+      for (const campo of camposEletricos) {
+        if (!dataObj[campo.nome]) {
+          setError(`O campo ${campo.label} é obrigatório para esta categoria.`);
+          erroManual = true;
+          return;
+        }
+      }
     }
     // Forçar unidade como 'UN'
     const dataToSend = {
@@ -247,14 +326,6 @@ export default function Home() {
       if (!erroManual) setTimeout(() => { setSuccess(false); }, 2000);
     }
   };
-
-  // Exibir erros de validação como alert
-  if (Object.keys(errors).length > 0) {
-    const firstError = Object.values(errors)[0];
-    if (firstError && typeof window !== 'undefined') {
-      alert((firstError as any).message || 'Erro de validação no formulário.');
-    }
-  }
 
   return (
     <div className="max-w-2xl mx-auto p-4">
@@ -391,7 +462,7 @@ export default function Home() {
                   <option key={opt} value={opt}>{opt}</option>
                 ))}
               </select>
-              {errors.sub_peca && <span className="text-red-500">{errors.sub_peca.message}</span>}
+              {(errors.sub_peca || error) && <span className="text-red-500">{errors.sub_peca?.message || error}</span>}
             </div>
             <div className="mt-1">
               <label>Unidade<span className="text-red-500">*</span></label>
@@ -453,16 +524,15 @@ export default function Home() {
             </div>
             <div>
               <label>Aparelho<span className="text-red-500">*</span></label>
-              <select {...register("aparelho")} className="input">
+              <select
+                {...register("aparelho")}
+                className={`input ${(!watch("categoria_peca") || !aparelhoOptions[watch("categoria_peca")]) ? "bg-gray-100 text-gray-400 cursor-not-allowed" : ""}`}
+                disabled={!watch("categoria_peca") || !aparelhoOptions[watch("categoria_peca")]}
+              >
                 <option value="">Selecione</option>
-                <option value="Ar-Condicionado">Ar-Condicionado</option>
-                <option value="Ar-Condicionado Portátil">Ar-Condicionado Portátil</option>
-                <option value="Lava e Seca">Lava e Seca</option>
-                <option value="Microondas">Microondas</option>
-                <option value="Purificador de Ar">Purificador de Ar</option>
-                <option value="Refrigerador">Refrigerador</option>
-                <option value="Smart Tv">Smart Tv</option>
-                <option value="Teclados e Mouse">Teclados e Mouse</option>
+                {watch("categoria_peca") && aparelhoOptions[watch("categoria_peca")]?.map(opt => (
+                  <option key={opt} value={opt}>{opt}</option>
+                ))}
               </select>
               {errors.aparelho && <span className="text-red-500">{errors.aparelho.message}</span>}
             </div>
@@ -494,31 +564,39 @@ export default function Home() {
 
         {/* Seção 2: FICHA ELÉTRICA (Opcional) */}
         <section>
-          <h2 className="text-xl font-semibold mb-2">Ficha Elétrica (Opcional)</h2>
+          <h2 className="text-xl font-semibold mb-2">
+            Ficha Elétrica {isEletrica ? <span className="text-red-500">*</span> : <span className="text-gray-400">(Opcional)</span>}
+          </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label>Tensão</label>
+              <label>Tensão{isEletrica && <span className="text-red-500">*</span>}</label>
               <input {...register("tensao")} className="input" />
+              {errors.tensao && <span className="text-red-500">{errors.tensao.message || 'Obrigatório'}</span>}
             </div>
             <div>
-              <label>Potência</label>
+              <label>Potência{isEletrica && <span className="text-red-500">*</span>}</label>
               <input {...register("potencia")} className="input" />
+              {errors.potencia && <span className="text-red-500">{errors.potencia.message || 'Obrigatório'}</span>}
             </div>
             <div>
-              <label>Corrente</label>
+              <label>Corrente{isEletrica && <span className="text-red-500">*</span>}</label>
               <input {...register("corrente")} className="input" />
+              {errors.corrente && <span className="text-red-500">{errors.corrente.message || 'Obrigatório'}</span>}
             </div>
             <div>
-              <label>Resistência</label>
+              <label>Resistência{isEletrica && <span className="text-red-500">*</span>}</label>
               <input {...register("resistencia")} className="input" />
+              {errors.resistencia && <span className="text-red-500">{errors.resistencia.message || 'Obrigatório'}</span>}
             </div>
             <div>
-              <label>Frequência</label>
+              <label>Frequência{isEletrica && <span className="text-red-500">*</span>}</label>
               <input {...register("frequencia")} className="input" />
+              {errors.frequencia && <span className="text-red-500">{errors.frequencia.message || 'Obrigatório'}</span>}
             </div>
             <div>
-              <label>Capacitância</label>
+              <label>Capacitância{isEletrica && <span className="text-red-500">*</span>}</label>
               <input {...register("capacitancia")} className="input" />
+              {errors.capacitancia && <span className="text-red-500">{errors.capacitancia.message || 'Obrigatório'}</span>}
             </div>
           </div>
         </section>
