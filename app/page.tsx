@@ -93,7 +93,7 @@ const schema = z.object({
     )
     .min(1, "Obrigatório"),
   aparelho: z.string().min(1, "Obrigatório"),
-  marca: z.enum(["FUJITSU", "DAIKIN", "ELGIN", "LG", "SAMSUNG", "MIDEA"]),
+  marca: z.enum(["Fujitsu", "Daikin", "Elgin", "LG", "Samsung", "Midea"]),
   range_btus: z.string().min(1, "Obrigatório"),
   modelos_compativeis: z.string().min(1, "Obrigatório"),
   // Seção 2: FICHA ELÉTRICA (Opcional)
