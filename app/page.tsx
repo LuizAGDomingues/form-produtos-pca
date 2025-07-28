@@ -5,6 +5,7 @@ import { z } from "zod";
 import { createClient } from "@supabase/supabase-js";
 import { useState, useEffect } from "react";
 import Select from "react-select";
+import NotificationStatus from "./components/NotificationStatus";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -116,6 +117,7 @@ type FormData = z.infer<typeof schema>;
 export default function Home() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [showNotificationStatus, setShowNotificationStatus] = useState(false);
   const {
     register,
     handleSubmit,
@@ -130,6 +132,37 @@ export default function Home() {
   useEffect(() => {
     console.log("isSubmitting:", isSubmitting);
   }, [isSubmitting]);
+
+  // Função para enviar notificações
+  const enviarNotificacoes = async (codigo_produto: string, descricao_produto: string) => {
+    setShowNotificationStatus(true);
+    
+    try {
+      // Enviar notificação por email
+      await fetch('/api/notificar-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          codigo_produto,
+          descricao_produto,
+          mensagem: `Produto cadastrado com sucesso: ${codigo_produto} - ${descricao_produto}`
+        }),
+      });
+
+      console.log('Notificação por email enviada com sucesso');
+      
+      // Ocultar status após 3 segundos
+      setTimeout(() => {
+        setShowNotificationStatus(false);
+      }, 3000);
+      
+    } catch (error) {
+      console.error('Erro ao enviar notificação por email:', error);
+      setShowNotificationStatus(false);
+    }
+  };
 
   // Opções para o campo unidade_texto
   const unidadeOptions = [
@@ -289,6 +322,10 @@ export default function Home() {
         console.error("Erro Supabase:", error);
       } else {
         setSuccess(true);
+        
+        // Enviar notificações após cadastro bem-sucedido
+        await enviarNotificacoes(data.codigo_produto, data.descricao_produto);
+        
         reset({
           codigo_produto: "",
           descricao_produto: "",
@@ -338,6 +375,13 @@ export default function Home() {
   return (
     <div className="max-w-2xl mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">PCA PEÇAS - CADASTRO DE PRODUTOS</h1>
+      
+      {/* Componente de status das notificações */}
+      <NotificationStatus 
+        isVisible={showNotificationStatus} 
+        onClose={() => setShowNotificationStatus(false)} 
+      />
+      
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         {/* Seção 1: FICHA GERAL */}
         <section>

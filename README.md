@@ -5,6 +5,7 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
 ## Funcionalidades
 - Cadastro de produtos com validação de campos obrigatórios e opcionais
 - Armazenamento das respostas diretamente no Supabase
+- **Sistema de notificações automáticas por email**
 - Interface responsiva e fácil de usar
 
 ## Tecnologias Utilizadas
@@ -13,6 +14,7 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
 - [Zod](https://zod.dev/)
 - [Supabase](https://supabase.com/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [Resend](https://resend.com/) (Email)
 
 ## Instalação
 
@@ -30,10 +32,20 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
 3. **Configure as variáveis de ambiente:**
    Crie um arquivo `.env.local` na raiz do projeto com o seguinte conteúdo:
    ```env
+   # Supabase Configuration
    NEXT_PUBLIC_SUPABASE_URL=COLOQUE_AQUI_SUA_URL_DO_SUPABASE
    NEXT_PUBLIC_SUPABASE_ANON_KEY=COLOQUE_AQUI_SUA_ANON_KEY_DO_SUPABASE
+
+   # Email Configuration (Resend)
+   RESEND_API_KEY=COLOQUE_AQUI_SUA_API_KEY_DO_RESEND
+   EMAIL_DESTINATARIOS=admin@pcapecas.com.br,gerente@pcapecas.com.br
    ```
-   Obtenha esses valores no painel do seu projeto Supabase.
+
+   ### Configuração do Email (Resend):
+   1. Crie uma conta em [resend.com](https://resend.com)
+   2. Obtenha sua API Key no painel
+   3. Configure o domínio de envio (ex: pcapecas.com.br)
+   4. Adicione os emails dos destinatários na variável `EMAIL_DESTINATARIOS`
 
 4. **Configure o banco de dados Supabase:**
    No painel do Supabase, crie uma tabela chamada `produtos` com as seguintes colunas (todas tipo `text`, exceto onde indicado):
@@ -48,10 +60,14 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
    | unidade               | text    |
    | quantidade_estoque    | numeric |
    | preco_unitario        | numeric |
-   | peso                  | numeric |
-   | altura                | numeric |
-   | largura               | numeric |
-   | profundidade          | numeric |
+   | peso_peca             | numeric |
+   | altura_peca           | numeric |
+   | largura_peca          | numeric |
+   | profundidade_peca     | numeric |
+   | peso_caixa            | numeric |
+   | altura_caixa          | numeric |
+   | largura_caixa         | numeric |
+   | profundidade_caixa    | numeric |
    | categoria_peca        | text    |
    | sub_peca              | text    |
    | unidade_texto         | text    |
@@ -85,6 +101,20 @@ O formulário é dividido em três seções:
 - **Ficha Geral:** campos obrigatórios sobre o produto
 - **Ficha Elétrica:** campos opcionais sobre características elétricas
 - **Informações Extras:** campos opcionais para informações adicionais
+
+## Sistema de Notificações
+
+### Email
+- **Serviço:** Resend
+- **Template:** Email HTML responsivo com informações do produto
+- **Destinatários:** Configuráveis via variável de ambiente
+- **Conteúdo:** Código do produto, descrição e data/hora do cadastro
+
+### Fluxo de Notificação
+1. Usuário cadastra produto no formulário
+2. Dados são salvos no Supabase
+3. Sistema envia notificação por email
+4. Feedback de sucesso é exibido ao usuário
 
 ## Personalização
 Você pode adaptar os campos do formulário e a tabela do Supabase conforme a necessidade do seu negócio.
