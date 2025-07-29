@@ -5,7 +5,7 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
 ## Funcionalidades
 - Cadastro de produtos com validação de campos obrigatórios e opcionais
 - Armazenamento das respostas diretamente no Supabase
-- **Sistema de notificações automáticas por email**
+- **Sistema de notificações automáticas por email (gratuito)**
 - Interface responsiva e fácil de usar
 
 ## Tecnologias Utilizadas
@@ -14,7 +14,15 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
 - [Zod](https://zod.dev/)
 - [Supabase](https://supabase.com/)
 - [TypeScript](https://www.typescriptlang.org/)
-- [Resend](https://resend.com/) (Email)
+- [Nodemailer](https://nodemailer.com/) (Email via Gmail SMTP)
+
+## Sistema de Notificações
+
+### 🆓 **Solução Gratuita Implementada**
+- **Email:** Gmail SMTP (500 emails/dia)
+- **Custo:** R$ 0,00
+- **Domínio:** Não necessário
+- **Configuração:** Simples e rápida
 
 ## Instalação
 
@@ -36,16 +44,29 @@ Este projeto é um formulário online para cadastro de produtos de peças, inspi
    NEXT_PUBLIC_SUPABASE_URL=COLOQUE_AQUI_SUA_URL_DO_SUPABASE
    NEXT_PUBLIC_SUPABASE_ANON_KEY=COLOQUE_AQUI_SUA_ANON_KEY_DO_SUPABASE
 
-   # Email Configuration (Resend)
-   RESEND_API_KEY=COLOQUE_AQUI_SUA_API_KEY_DO_RESEND
+   # Email Configuration (Gmail SMTP)
+   GMAIL_USER=seu-email@gmail.com
+   GMAIL_APP_PASSWORD=sua-senha-de-app
    EMAIL_DESTINATARIOS=admin@pcapecas.com.br,gerente@pcapecas.com.br
    ```
 
-   ### Configuração do Email (Resend):
-   1. Crie uma conta em [resend.com](https://resend.com)
-   2. Obtenha sua API Key no painel
-   3. Configure o domínio de envio (ex: pcapecas.com.br)
-   4. Adicione os emails dos destinatários na variável `EMAIL_DESTINATARIOS`
+   ### Configuração do Email (Gmail SMTP):
+   1. **Ative 2FA na sua conta Google:**
+      - Acesse [myaccount.google.com](https://myaccount.google.com)
+      - Vá em "Segurança"
+      - Ative "Verificação em duas etapas"
+
+   2. **Gere uma senha de aplicativo:**
+      - Ainda em "Segurança"
+      - Clique em "Senhas de app"
+      - Selecione "Outro (nome personalizado)"
+      - Digite "PCA Peças"
+      - Copie a senha de 16 caracteres gerada
+
+   3. **Configure as variáveis de ambiente:**
+      - `GMAIL_USER`: seu email do Gmail
+      - `GMAIL_APP_PASSWORD`: a senha de 16 caracteres gerada
+      - `EMAIL_DESTINATARIOS`: emails separados por vírgula
 
 4. **Configure o banco de dados Supabase:**
    No painel do Supabase, crie uma tabela chamada `produtos` com as seguintes colunas (todas tipo `text`, exceto onde indicado):
@@ -104,17 +125,24 @@ O formulário é dividido em três seções:
 
 ## Sistema de Notificações
 
-### Email
-- **Serviço:** Resend
+### Email (Gmail SMTP)
+- **Serviço:** Gmail SMTP
 - **Template:** Email HTML responsivo com informações do produto
 - **Destinatários:** Configuráveis via variável de ambiente
 - **Conteúdo:** Código do produto, descrição e data/hora do cadastro
+- **Limite:** 500 emails/dia
+- **Custo:** R$ 0,00
 
 ### Fluxo de Notificação
 1. Usuário cadastra produto no formulário
 2. Dados são salvos no Supabase
-3. Sistema envia notificação por email
+3. Sistema envia notificação por email via Gmail SMTP
 4. Feedback de sucesso é exibido ao usuário
+
+## APIs Disponíveis
+
+### Email
+- `/api/notificar-email-gmail` - Gmail SMTP (gratuito)
 
 ## Personalização
 Você pode adaptar os campos do formulário e a tabela do Supabase conforme a necessidade do seu negócio.

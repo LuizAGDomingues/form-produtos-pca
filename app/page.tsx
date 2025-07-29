@@ -138,8 +138,8 @@ export default function Home() {
     setShowNotificationStatus(true);
     
     try {
-      // Enviar notificação por email
-      await fetch('/api/notificar-email', {
+      // Enviar notificação por email (Gmail SMTP)
+      await fetch('/api/notificar-email-gmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -152,6 +152,8 @@ export default function Home() {
       });
 
       console.log('Notificação por email enviada com sucesso');
+      
+      // Removido: Envio de notificação por WhatsApp (WPPConnect)
       
       // Ocultar status após 3 segundos
       setTimeout(() => {
