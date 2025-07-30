@@ -472,7 +472,6 @@ export default function Home() {
                 <option value="Aleta">Aleta</option>
                 <option value="Amortecedor">Amortecedor</option>
                 <option value="Bandeja">Bandeja</option>
-                <option value="Bandeja de Dreno">Bandeja de Dreno</option>
                 <option value="Base da Condensadora">Base da Condensadora</option>
                 <option value="Borracha">Borracha</option>
                 <option value="Bomba">Bomba</option>
@@ -504,9 +503,7 @@ export default function Home() {
                 <option value="Sensor de Nível">Sensor de Nível</option>
                 <option value="Serpentina">Serpentina</option>
                 <option value="Suporte">Suporte</option>
-                <option value="Suporte do Tambor">Suporte do Tambor</option>
                 <option value="Tampa">Tampa</option>
-                <option value="Tampa do Dreno">Tampa do Dreno</option>
                 <option value="Termistor">Termistor</option>
                 <option value="Terminal">Terminal</option>
                 <option value="Transformador">Transformador</option>
@@ -514,8 +511,6 @@ export default function Home() {
                 <option value="Tubo">Tubo</option>
                 <option value="Turbina">Turbina</option>
                 <option value="Válvula">Válvula</option>
-                <option value="Válvula de Serviço">Válvula de Serviço</option>
-                <option value="Válvula Reversora">Válvula Reversora</option>
               </select>
               {errors.categoria_peca && <span className="text-red-500">{errors.categoria_peca.message}</span>}
             </div>
